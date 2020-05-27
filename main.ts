@@ -1,6 +1,10 @@
 /**
- * Control micro servos
+ * Control keyestudio servoCar
+ * author: jieliang mo
+ * github:https://github.com/mworkfun
+ * Write the date: 2020-5-27
  */
+
 //% color="#ff6800" icon="\uf1b9" 
 //% groups='["Car", "Servo", "Configuration"]'
 namespace ServoCar {
