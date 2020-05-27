@@ -4,15 +4,19 @@
     "description": "",
     "dependencies": {
         "core": "*",
-        "radio": "*"
+        "radio": "*",
+        "neopixel": "github:microsoft/pxt-neopixel#v0.7.2"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "targetOverrides.ts",
+        "ns.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
     "public": false,
-    "preferredEditor": "tsprj"
+    "preferredEditor": "tsprj",
+    "installedVersion": "workspace:d4c13c83-cee1-40a3-65c3-2bd91d4dca1f"
 }

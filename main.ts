@@ -1,69 +1,163 @@
-// keyestudio ServoCar for microbit
-// (receiver module+remote controller)
-// author: jieliang mo
-// github:https://github.com/mworkfun
-// Write the date: 2020-5-25
-
 /**
- * use for control motor
+ * Control micro servos
  */
-enum DIR {
-    run_forward = 0,
-    run_back = 1,
-    Turn_Left = 2,
-    Turn_Right = 3
-}
-enum MOTOR {
-    A = 0,
-    B = 1
-}
-enum MotorState {
-    stop = 0,
-    brake = 1
-}
-
-//% color="#ff6800" icon="\uf1b9"
-//% groups="['Motor', 'RGB-led', 'Neo-pixel', 'Sensor', 'Tone']"
+//% color="#ff6800" icon="\uf1b9" 
+//% groups='["Car", "Servo", "Configuration"]'
 namespace ServoCar {
-    /**
-     * Ultrasonic sensor
-     */
-    const TRIG_PIN = DigitalPin.P1;
-    const ECHO_PIN = DigitalPin.P2;
-    let lastTime = 0;
-    /////////////////////////////////////////////////////
-    /**
-     * car run diretion
-     */
-    //% block="car $direction speed: $speed \\%"
-    //% speed.min=0 speed.max=100
-    //% group="Motor" weight=99
-    export function run(direction: DIR, speed: number) {
+
+    //% fixedInstances
+    export class Servo {
+        private _minAngle: number;
+        private _maxAngle: number;
+        private _stopOnNeutral: boolean;
+
+        constructor() {
+            this._minAngle = 0;
+            this._maxAngle = 180;
+            this._stopOnNeutral = false;
+        }
+
+        private clampDegrees(degrees: number): number {
+            degrees = degrees | 0;
+            degrees = Math.clamp(this._minAngle, this._maxAngle, degrees);
+            return degrees;
+        }
+
+        /**
+         * Set the servo angle
+         */
+        //% weight=100 help=servos/set-angle
+        //% blockId=servoservosetangle block="set %servo angle to %degrees=protractorPicker °"
+        //% degrees.defl=90
+        //% servo.fieldEditor="gridpicker"
+        //% servo.fieldOptions.width=220
+        //% servo.fieldOptions.columns=2
+        //% parts=microservo trackArgs=0
+        //% group="Servo"
+        setAngle(degrees: number) {
+            degrees = this.clampDegrees(degrees);
+            this.internalSetAngle(degrees);
+        }
+
+        protected internalSetAngle(angle: number): void {
+
+        }
+
+        /**
+         * Stop sending commands to the servo so that its rotation will stop at the current position.
+         */
+        // On a normal servo this will stop the servo where it is, rather than return it to neutral position.
+        // It will also not provide any holding force.
+        //% weight=10 help=servos/stop
+        //% blockId=servoservostop block="stop %servo"
+        //% servo.fieldEditor="gridpicker"
+        //% servo.fieldOptions.width=220
+        //% servo.fieldOptions.columns=2
+        //% parts=microservo trackArgs=0
+        //% group="Servo"
+        stop() {
+            this.internalStop();
+        }
+        protected internalStop() { }
+
+        /**
+         * Gets the minimum angle for the servo
+         */
+        public get minAngle() {
+            return this._minAngle;
+        }
+
+        /**
+         * Gets the maximum angle for the servo
+         */
+        public get maxAngle() {
+            return this._maxAngle;
+        }
 
     }
 
-    //% block="Run $M speed: $speed \\%"
-    //% speed.min=-100 speed.max=100
-    //% group="servo" weight=98
-    export function Run(M: MOTOR, speed: number) {
-        //send trig pulse
-        pins.setPull(TRIG_PIN, PinPullMode.PullNone);
-        pins.digitalWritePin(TRIG_PIN, 0)
-        control.waitMicros(2);
-        pins.digitalWritePin(TRIG_PIN, 1)
-        control.waitMicros(10);
-        pins.digitalWritePin(TRIG_PIN, 0)
+    export class PinServo extends Servo {
+        private _pin: PwmOnlyPin;
 
-        // read echo pulse  max distance : 6m(35000us)  
-        let t = pins.pulseIn(ECHO_PIN, PulseValue.High, 35000);
-        let ret = t;
-
-        //Eliminate the occasional bad data
-        if (ret == 0 && lastTime != 0) {
-            ret = lastTime;
+        constructor(pin: PwmOnlyPin) {
+            super();
+            this._pin = pin;
         }
-        lastTime = t;
 
-        return Math.round(ret / 58);
+        protected internalSetAngle(angle: number): void {
+            this._pin.servoWrite(angle);
+        }
+
+        protected internalSetPulse(micros: number): void {
+            this._pin.servoSetPulse(micros);
+        }
+
+        protected internalStop() {
+            this._pin.digitalWrite(false);
+        }
+
+        InternalSetAngle(angle: number): void {
+            this._pin.servoWrite(angle);
+        }
+    }
+
+    let leftWheel = new PinServo(pins.P0);
+    let rightWheel = new PinServo(pins.P1);
+    let shovel = new PinServo(pins.P2);
+
+    /**
+     * Set the car speed
+     * angle can control speed
+     */
+    //% block="Car %directe speed: %Speed"
+    //% Speed.min=0 Speed.max=100
+    //% group="Car"
+    export function Run(directe: DIR, Speed: number) {
+        let CW = Math.map(Speed, 0, 100, 90, 180);
+        let CCW = Math.map(Speed, 0, 100, 90, 0);
+        if (directe == 0) {
+            leftWheel.InternalSetAngle(CW);
+            rightWheel.InternalSetAngle(CCW);
+        }
+        if (directe == 1) {
+            leftWheel.InternalSetAngle(CCW);
+            rightWheel.InternalSetAngle(CW);
+        }
+        if (directe == 2) {
+            leftWheel.InternalSetAngle(CW);
+            rightWheel.InternalSetAngle(CW);
+        }
+        if (directe == 3) {
+            leftWheel.InternalSetAngle(CCW);
+            rightWheel.InternalSetAngle(CCW);
+        }
+    }
+    /**
+     * Car stop
+     */
+    //% block="Car Stop"
+    //% group="Car"
+    export function Stop() {
+        leftWheel.InternalSetAngle(90);
+        rightWheel.InternalSetAngle(90);
+    }
+
+    /**
+     * car's shovel
+     */
+    //% block="Angle of Car's shovel: %angle °"
+    //% angle.min=0 angle.max=90
+    //% group="Car"
+    export function Shovel(angle: number) {
+        shovel.InternalSetAngle(angle);
     }
 }
+
+enum DIR {
+    runForward = 0,
+    runBack = 1,
+    turnLeft = 2,
+    turnRight = 3
+}
+
+
