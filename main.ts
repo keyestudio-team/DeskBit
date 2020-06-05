@@ -105,7 +105,7 @@ namespace ServoCar {
         }
     }
 
-    let leftWheel = new PinServo(pins.P0);
+    let leftWheel = new PinServo(pins.P2);
     let rightWheel = new PinServo(pins.P1);
     let shovel = new PinServo(pins.P2);
 
@@ -160,8 +160,8 @@ namespace ServoCar {
 enum DIR {
     runForward = 0,
     runBack = 1,
-    turnLeft = 2,
-    turnRight = 3
+    turnLeft = 3,
+    turnRight = 2
 }
 
 
