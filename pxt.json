@@ -4,7 +4,7 @@
     "description": "",
     "dependencies": {
         "core": "*",
-        "neopixel": "github:microsoft/pxt-neopixel#v0.7.2"
+        "neopixel": "github:mworkfun/pxt-neopixel-bluetooth"
     },
     "files": [
         "README.md",
@@ -17,5 +17,5 @@
     ],
     "public": false,
     "preferredEditor": "tsprj",
-    "installedVersion": "workspace:d4c13c83-cee1-40a3-65c3-2bd91d4dca1f"
+    "installedVersion": "workspace:334a3b7b-95c7-41fb-efb7-0750dfd99342"
 }
