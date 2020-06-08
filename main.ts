@@ -107,7 +107,7 @@ namespace ServoCar {
 
     let leftWheel = new PinServo(pins.P2);
     let rightWheel = new PinServo(pins.P1);
-    let shovel = new PinServo(pins.P2);
+    let shovel = new PinServo(pins.P0);
 
     /**
      * Set the car speed
