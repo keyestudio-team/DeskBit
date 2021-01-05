@@ -5,7 +5,7 @@
  * Write the date: 2020-5-28
  */
 
-//% color="ff6800" icon="\uf1b9" 
+//% color="#ff6800" icon="\uf1b9" 
 //% groups='["Car", "Servo", "Configuration"]'
 namespace DeskBit {
 
@@ -172,7 +172,7 @@ namespace DeskBit {
     /**
      * car's shovel
      */
-    //% block="Angle of Car's shovel: %angle °"
+    //% block="Angle of Car's arm: %angle °"
     //% angle.min=0 angle.max=90
     //% group="Car"
     export function Shovel(angle: number) {
