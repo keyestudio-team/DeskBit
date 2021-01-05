@@ -1,13 +1,13 @@
 /**
- * Control keyestudio servoCar
- * author: jieliang mo
+ * Control keyestudio DeskBitCar
+ * author: xiuxian
  * github:https://github.com/mworkfun
  * Write the date: 2020-5-28
  */
 
-//% color="#ff6800" icon="\uf1b9" 
+//% color="ff6800" icon="\uf1b9" 
 //% groups='["Car", "Servo", "Configuration"]'
-namespace ServoCar {
+namespace DeskBit {
 
     //% fixedInstances
     export class Servo {
@@ -137,6 +137,29 @@ namespace ServoCar {
         }
     }
     /**
+     * Set the car speed
+     * angle can control speed
+     */
+    //% block="Car %select wheel %directe speed: %Speed"
+    //% Speed.min=0 Speed.max=100
+    //% group="Car"
+    export function Run2(select: L_R, directe: F_B, Speed: number) {
+        let CW = Math.map(Speed, 0, 100, 90, 180);
+        let CCW = Math.map(Speed, 0, 100, 90, 0);
+        if ((select == 0) && (directe == 0)) {
+            leftWheel.InternalSetAngle(CW);
+        }
+        if ((select == 0) && (directe == 1)) {
+            leftWheel.InternalSetAngle(CCW);
+        }
+        if ((select == 1) && (directe == 0)) {
+            rightWheel.InternalSetAngle(CCW);
+        }
+        if ((select == 1) && (directe == 1)) {
+            rightWheel.InternalSetAngle(CW);
+        }
+    }
+    /**
      * Car stop
      */
     //% block="Car Stop"
@@ -160,8 +183,16 @@ namespace ServoCar {
 enum DIR {
     runForward = 0,
     runBack = 1,
-    turnLeft = 3,
-    turnRight = 2
+    leftRotation = 3,
+    rightRotation = 2,
 }
 
+enum L_R {
+    left = 0,
+    right = 1,
+}
 
+enum F_B {
+    forward = 0,
+    back = 1,
+}
